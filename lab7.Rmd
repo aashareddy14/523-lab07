@@ -19,6 +19,11 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment = NA,
                       fig.width=8, 
                       fig.height=6)
+
+library(tidyverse)
+library(stringr)
+library(jsonlite)
+library(sf)
 ```
 
 ## Introduction
@@ -49,7 +54,7 @@ in folder `data`. Below, load your data with `readRDS()`
 </div>
 
 ```{r load_tornadoes}
-
+ok_tornadoes <- readRDS("data/ok_tornadoes.rds")
 ```
 
 <br/>
@@ -68,7 +73,12 @@ data with `readRDS()`.
 </div>
 
 ```{r load_school_districts}
+school_districts <- readRDS("data/school_districts.rds")
 
+# clean list to tibble 
+school_districts <- school_districts$Features
+saveRDS(school_districts, "data/schools.shp")
+schools <- readRDS("data/schools.shp")
 ```
 
 <br/>
@@ -86,7 +96,11 @@ data with `readRDS()`.
 </div>
 
 ```{r load_fire_stations}
+fire_stations <- readRDS("data/fire_stations")
 
+# clean data 
+
+fire_stations <- fire_stations$Features
 ```
 
 <br/>
@@ -101,5 +115,31 @@ historical tornado data and fire station data? What other data may be valuable
 to you for your analysis?
 </div>
 
+First we should see if there is a relationship between number of fire stations 
+in a school district to number of tornadoes. We should use the most recent years
+as districting might have changed. If we wanted a more rigorous metric, we 
+should obtain fire station and district information from 1998 to 2017. We can 
+then understand the relationship between number of tornadoes (maybe damage) and 
+some notion of number or distance of fire stations, and then use that functional
+form of the regression as the risk metric. 
 
+First, understand how many fire stations are in each district
+
+CANT FIGURE OUT HOW TO CONVERT TO SPATIAL DATA 
+```{r}
+
+schools %>%
+  select(GeometryType, Geometry, CenterLat, CenterLong) %>%
+  plot(.)
+
+class(schools)
+
+plot(schools)
+
+plot(nc)
+
+schools <- st_read(school_districts, "data/school_districts.shp", driver = "ESRI Shapefile")
+
+nc <- st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
+```
 
